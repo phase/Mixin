@@ -27,6 +27,8 @@ package org.spongepowered.asm.mixin.transformer.ext.extensions;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
@@ -43,8 +45,6 @@ import org.spongepowered.asm.util.Constants;
 import org.spongepowered.asm.util.perf.Profiler.Section;
 
 import com.google.common.io.Files;
-import com.google.common.io.MoreFiles;
-import com.google.common.io.RecursiveDeleteOption;
 
 /**
  * Debug exporter
@@ -75,7 +75,10 @@ public class ExtensionClassExporter implements IExtension {
         this.decompiler = this.initDecompiler(env, new File(Constants.DEBUG_OUTPUT_DIR, ExtensionClassExporter.EXPORT_JAVA_DIR));
 
         try {
-            MoreFiles.deleteRecursively(this.classExportDir.toPath(), RecursiveDeleteOption.ALLOW_INSECURE);
+            java.nio.file.Files.walk(this.classExportDir.toPath())
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
         } catch (IOException ex) {
             ExtensionClassExporter.logger.debug("Error cleaning class output directory: {}", ex.getMessage());
         }
