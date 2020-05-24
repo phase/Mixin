@@ -596,7 +596,7 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig {
         this.plugin = new PluginHandle(this, this.service, this.pluginClassName);
         this.plugin.onLoad(this.mixinPackage);
 
-        if (!this.mixinPackage.endsWith(".")) {
+        if (!this.mixinPackage.endsWith(".") && !this.mixinPackage.isEmpty()) {
             this.mixinPackage += ".";
         }
         
@@ -984,7 +984,7 @@ final class MixinConfig implements Comparable<MixinConfig>, IMixinConfig {
      *      package
      */
     public boolean packageMatch(String className) {
-        return className.startsWith(this.mixinPackage);
+        return !this.mixinPackage.isEmpty() && className.startsWith(this.mixinPackage);
     }
     
     /**
